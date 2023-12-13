@@ -3,14 +3,24 @@ package rt.sae32.processing;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.json.JSONArray;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+/**
+ * Remove duplicate keys from a JSON file
+ * <p>
+ *     This class is used to remove duplicate keys from a JSON file.
+ *     It is used in the Main class.
+ *     It takes a JSON file as input and returns a JSONArray.
+ *
+ */
 public class RemoveDuplicateKeys {
-    public static void main(String InputFile, String OutputFile) {
+    public static JSONArray main(String InputFile) {
         ObjectMapper mapper = new ObjectMapper();
 
         try {
@@ -21,13 +31,12 @@ public class RemoveDuplicateKeys {
             // Delete duplicate keys
             JsonNode cleanedNode = removeDuplicateKeys(rootNode);
 
-            // Save cleaned json file
-            mapper.writeValue(new File(OutputFile), cleanedNode);
-
-            System.out.println("Clés dupliquées supprimées avec succès !");
+            // Return cleaned json
+            return new JSONArray(cleanedNode.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     private static JsonNode removeDuplicateKeys(JsonNode node) {

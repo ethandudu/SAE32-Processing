@@ -1,11 +1,7 @@
 package rt.sae32.processing;
 
-import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.io.File;
-//import java.io.FileReader;
 
 public class Main {
     public static void main(String[] args) {
@@ -17,14 +13,8 @@ public class Main {
             String fichierUtilise = "/nas2/users/etudiant/b/by310239/Documents/GitHub/Wireshark/ether_modifie.json";
             
             // Fonction qui supprime les clés dupliquées
-            RemoveDuplicateKeys.main(fichierDuplique, fichierUtilise);
-            
-            // Créer un objet lisant le fichier JSON
-            //FileReader lireFichier = new FileReader(fichierUtilise);
-            String json = FileUtils.readFileToString(new File(fichierUtilise), "UTF-8");
-            JSONArray array = new JSONArray(json);
+            JSONArray array = RemoveDuplicateKeys.main(fichierDuplique);
 
-            // JSONArray fichierArray = new JSONArray(fichierUtilise);
 
             // Créer un JSONArray pour stocker les String
             JSONArray jsonArray = new JSONArray();
