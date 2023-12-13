@@ -66,9 +66,6 @@ public class Main {
                     JSONObject eth = layers.getJSONObject("eth");
                     macSource = eth.getString("eth.src");
                     macDestination = eth.getString("eth.dst");                    
-                } else {
-                    macSource = null;
-                    macDestination = null;
                 }
                 System.out.println("MAC Source : " + macSource);
                 System.out.println("MAC Destination : " + macDestination);
@@ -84,9 +81,6 @@ public class Main {
                     ipSource = ipv6.getString("ipv6.src");
                     ipDestination = ipv6.getString("ipv6.dst");
 
-                } else {
-                    ipSource = null;
-                    ipDestination = null;
                 }
                 System.out.println("IP Source : " + ipSource);
                 System.out.println("IP Destination : " + ipDestination);
