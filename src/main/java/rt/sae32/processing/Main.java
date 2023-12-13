@@ -11,10 +11,10 @@ public class Main {
     public static void main(String[] args) {
         try {
             // Spécifiez le chemin du fichier JSON avec les clés dupliquées
-            String fichierDuplique = "/nas2/users/etudiant/b/by310239/Documents/GitHub/Wireshark/test_Win.json";
+            String fichierDuplique = "/nas2/users/etudiant/b/by310239/Documents/GitHub/Wireshark/ether.json";
             
             // Spécifiez le chemin du fichier JSON à créer sans les clés dupliquées
-            String fichierUtilise = "/nas2/users/etudiant/b/by310239/Documents/GitHub/Wireshark/test_Win_modifie.json";
+            String fichierUtilise = "/nas2/users/etudiant/b/by310239/Documents/GitHub/Wireshark/ether_modifie.json";
             
             // Fonction qui supprime les clés dupliquées
             RemoveDuplicateKeys.main(fichierDuplique, fichierUtilise);
@@ -39,10 +39,11 @@ public class Main {
                 String ipDestination = null;
 
                 // Créer un JSONObject pour stocker les valeurs
+                JSONObject packet = new JSONObject();
                 JSONObject jsonObject = new JSONObject();
                 
-                String packets = "Packet " + i + " { ";
-                System.out.println(packets);
+                String id = "ID " + i + " { ";
+                System.out.println(id);
                 JSONObject objetATrouver = array.getJSONObject(i);
                 //System.out.println("Source : " + sourceATrouver.get("_source"));
                 //search in the object for the value of the key [_source][layers][frame][frame.protocols]
@@ -57,41 +58,48 @@ public class Main {
                     JSONObject sll = layers.getJSONObject("sll");
                     if (sll.has("sll.src.eth")) {
                         macSource = sll.getString("sll.src.eth");
-                        System.out.println("MAC Source : " + macSource);
                     }
                     if (sll.has("sll.dst.eth")) {
                         macDestination = sll.getString("sll.dst.eth");
-                        System.out.println("MAC Destination : " + macDestination);
-                    } else {
-                        System.out.println("MAC Destination : null");
                     }
                 } else if (layers.has("eth")) {
                     JSONObject eth = layers.getJSONObject("eth");
                     macSource = eth.getString("eth.src");
-                    macDestination = eth.getString("eth.dst");
-                    System.out.println("MAC Source : " + macSource);
-                    System.out.println("MAC Destination : " + macDestination);                    
+                    macDestination = eth.getString("eth.dst");                    
+                } else {
+                    macSource = null;
+                    macDestination = null;
                 }
-                jsonObject.put("MAC Source", macSource);
-                jsonObject.put("MAC Destination", macDestination);
+                System.out.println("MAC Source : " + macSource);
+                System.out.println("MAC Destination : " + macDestination);
+                jsonObject.put("MACSrc", macSource);
+                jsonObject.put("MACDst", macDestination);
 
                 if (layers.has("ip")) {
                     JSONObject ip = layers.getJSONObject("ip");
                     ipSource = ip.getString("ip.src");
                     ipDestination = ip.getString("ip.dst");
-                    //System.out.println("IP Source : " + ipSource);
-                    //System.out.println("IP Destination : " + ipDestination);
+                } else if (layers.has("ipv6")) {
+                    JSONObject ipv6 = layers.getJSONObject("ipv6");
+                    ipSource = ipv6.getString("ipv6.src");
+                    ipDestination = ipv6.getString("ipv6.dst");
+
+                } else {
+                    ipSource = null;
+                    ipDestination = null;
                 }
-                jsonObject.put("IP Source", ipSource);
-                jsonObject.put("IP Destination", ipDestination);
+                System.out.println("IP Source : " + ipSource);
+                System.out.println("IP Destination : " + ipDestination);
+                jsonObject.put("IPSrc", ipSource);
+                jsonObject.put("IPDst", ipDestination);
                 System.out.println("--------------------------------------------------");
                 
                 // Ajouter le JSONObject au JSONArray
-                jsonArray.put(jsonObject);
+                jsonArray.put(packet.put(id, jsonObject));
             }
             // System.out.println(array.getJSONObject(0).getJSONObject("_source").getJSONObject("layers").getJSONObject("frame").getString("frame.protocols"));
-            // Affiche le JSONArray contenant tous les String
-            System.out.println("Tous les JSONObject : " + jsonArray.toString());
+            // Affiche le JSONArray contenant tous les JSonObject
+            System.out.println(jsonArray.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
