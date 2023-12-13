@@ -93,7 +93,7 @@ public class Main {
             }
             // System.out.println(array.getJSONObject(0).getJSONObject("_source").getJSONObject("layers").getJSONObject("frame").getString("frame.protocols"));
             // Affiche le JSONArray contenant tous les JSonObject
-            System.out.println(jsonArray.toString());
+            System.out.println(jsonArray);
         } catch (Exception e) {
             e.printStackTrace();
         }
