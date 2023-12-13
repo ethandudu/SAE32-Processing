@@ -32,7 +32,7 @@ public class Main {
             System.out.println("--------------------------------------------------");
 
             for (int i = 0; i < array.length(); i++) {
-                String protocols = null;
+                String protocols;
                 String macSource = null;
                 String macDestination = null;
                 String ipSource = null;
