@@ -2,7 +2,6 @@ package rt.sae32.processing;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -24,28 +23,19 @@ public class Main {
             System.out.println("--------------------------------------------------");
 
             for (int i = 0; i < array.length(); i++) {
-                //String protocols;
                 String macSource = null;
                 String macDestination = null;
                 String ipSource = null;
                 String ipDestination = null;
 
-                
                 JSONObject jsonObject = new JSONObject();
-                
-                //String id = "ID " + i;
-                //JSONObject id = new JSONObject();
-                //jsonObject.put(Integer.toString(i), id);
-                //System.out.println(id);
+
                 JSONObject objetATrouver = array.getJSONObject(i);
-                //System.out.println("Source : " + sourceATrouver.get("_source"));
-                //search in the object for the value of the key [_source][layers][frame][frame.protocols]
+
+                // Search in the object for the value of the key [_source][layers][frame][frame.protocols]
                 JSONObject source = objetATrouver.getJSONObject("_source");
                 JSONObject layers = source.getJSONObject("layers");
                 JSONObject frame = layers.getJSONObject("frame");
-                //protocols = frame.getString("frame.protocols");
-                //System.out.println("Protocols : " + protocols);
-                //jsonObject.put("protocols", protocols);
 
                 // Découpe protocols en fonction des ":" et met les valeurs dans un JSONArray
                 String protocolsArrayString[] = frame.getString("frame.protocols").split(":");
@@ -88,9 +78,11 @@ public class Main {
                 System.out.println("IP Destination : " + ipDestination);
                 jsonObject.put("ipsrc", ipSource);
                 jsonObject.put("ipdst", ipDestination);
+
                 JSONObject data = new JSONObject();
                 jsonObject.put("data", data);
                 System.out.println("Data : " + data);
+
                 System.out.println("--------------------------------------------------");
                 
                 // Ajouter le JSONObject au JSONArray
