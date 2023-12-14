@@ -3,22 +3,21 @@ package rt.sae32.processing;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 public class Main {
     public static void main(String[] args) {
+        JSONArray array = loadFile("/nas2/users/etudiant/b/by310239/Documents/GitHub/Wireshark/ether.json");
+        if (array == null) {
+            System.out.println("Erreur lors de la lecture du fichier");
+            return;
+        }
         try {
-            // Spécifiez le chemin du fichier JSON avec les clés dupliquées
-            String fichierDuplique = "/nas2/users/etudiant/b/by310239/Documents/GitHub/Wireshark/ether.json";
-            
-            // Spécifiez le chemin du fichier JSON à créer sans les clés dupliquées
-            String fichierUtilise = "/nas2/users/etudiant/b/by310239/Documents/GitHub/Wireshark/ether_modifie.json";
-            
-            // Fonction qui supprime les clés dupliquées
-            JSONArray array = RemoveDuplicateKeys.main(fichierDuplique);
-
 
             // Créer un JSONArray pour stocker les String
             JSONArray jsonArray = new JSONArray();
-            
+
             System.out.println("--------------------------------------------------");
 
             for (int i = 0; i < array.length(); i++) {
@@ -86,6 +85,16 @@ public class Main {
             System.out.println(jsonArray);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private static JSONArray loadFile(String InputFile) {
+        //check if the file exists
+        if (Files.exists(Paths.get(InputFile))) {
+            return RemoveDuplicateKeys.main(InputFile);
+        } else {
+            System.out.println("Le fichier n'existe pas");
+            return null;
         }
     }
 }
