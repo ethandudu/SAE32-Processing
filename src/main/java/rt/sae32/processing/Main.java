@@ -16,32 +16,45 @@ public class Main {
         try {
 
             // Créer un JSONArray pour stocker les String
-            JSONArray jsonArray = new JSONArray();
+            JSONObject object = new JSONObject();
+
+            // Créer un JSONObject pour stocker les valeurs
+            JSONObject packet = new JSONObject();
 
             System.out.println("--------------------------------------------------");
 
             for (int i = 0; i < array.length(); i++) {
-                String protocols;
+                //String protocols;
                 String macSource = null;
                 String macDestination = null;
                 String ipSource = null;
                 String ipDestination = null;
 
-                // Créer un JSONObject pour stocker les valeurs
-                JSONObject packet = new JSONObject();
+                
                 JSONObject jsonObject = new JSONObject();
                 
-                String id = "ID " + i + " { ";
-                System.out.println(id);
+                //String id = "ID " + i;
+                //JSONObject id = new JSONObject();
+                //jsonObject.put(Integer.toString(i), id);
+                //System.out.println(id);
                 JSONObject objetATrouver = array.getJSONObject(i);
                 //System.out.println("Source : " + sourceATrouver.get("_source"));
                 //search in the object for the value of the key [_source][layers][frame][frame.protocols]
                 JSONObject source = objetATrouver.getJSONObject("_source");
                 JSONObject layers = source.getJSONObject("layers");
                 JSONObject frame = layers.getJSONObject("frame");
-                protocols = frame.getString("frame.protocols");
-                System.out.println("Protocols : " + protocols);
-                jsonObject.put("Protocols", protocols);
+                //protocols = frame.getString("frame.protocols");
+                //System.out.println("Protocols : " + protocols);
+                //jsonObject.put("protocols", protocols);
+
+                // Découpe protocols en fonction des ":" et met les valeurs dans un JSONArray
+                String protocolsArrayString[] = frame.getString("frame.protocols").split(":");
+                JSONArray protocols= new JSONArray();
+                for (int j = 0; j < protocolsArrayString.length; j++) {
+                    protocols.put(protocolsArrayString[j]);
+                }
+                System.out.println("protocols : " + protocols);
+                jsonObject.put("protocols", protocols);
                 
                 if (layers.has("sll")) {
                     JSONObject sll = layers.getJSONObject("sll");
@@ -58,8 +71,8 @@ public class Main {
                 }
                 System.out.println("MAC Source : " + macSource);
                 System.out.println("MAC Destination : " + macDestination);
-                jsonObject.put("MACSrc", macSource);
-                jsonObject.put("MACDst", macDestination);
+                jsonObject.put("macsrc", macSource);
+                jsonObject.put("macdst", macDestination);
 
                 if (layers.has("ip")) {
                     JSONObject ip = layers.getJSONObject("ip");
@@ -73,16 +86,22 @@ public class Main {
                 }
                 System.out.println("IP Source : " + ipSource);
                 System.out.println("IP Destination : " + ipDestination);
-                jsonObject.put("IPSrc", ipSource);
-                jsonObject.put("IPDst", ipDestination);
+                jsonObject.put("ipsrc", ipSource);
+                jsonObject.put("ipdst", ipDestination);
+                JSONObject data = new JSONObject();
+                jsonObject.put("data", data);
+                System.out.println("Data : " + data);
                 System.out.println("--------------------------------------------------");
                 
                 // Ajouter le JSONObject au JSONArray
-                jsonArray.put(packet.put(id, jsonObject));
+                object.put(Integer.toString(i),jsonObject);
             }
             // System.out.println(array.getJSONObject(0).getJSONObject("_source").getJSONObject("layers").getJSONObject("frame").getString("frame.protocols"));
-            // Affiche le JSONArray contenant tous les JSonObject
-            System.out.println(jsonArray);
+            
+            packet.put("packets", object);
+
+            // Affiche le JSONObject contenant toutes les valeurs
+            System.out.println(packet);
         } catch (Exception e) {
             e.printStackTrace();
         }
