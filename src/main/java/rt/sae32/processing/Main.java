@@ -93,7 +93,7 @@ public class Main {
             packet.put("packets", object);
 
             // Affiche le JSONObject contenant toutes les valeurs
-            System.out.println(packet);
+            SendData(createIndexPacket(object.length()), packet);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -107,5 +107,26 @@ public class Main {
             System.out.println("Le fichier n'existe pas");
             return null;
         }
+    }
+
+    private static void SendData(JSONObject dataindex, JSONObject datapackets){
+        String url = "https://api.sae32.ethanduault.fr/insert.php";
+        String response = HttpRequest.main(url, dataindex.toString(), datapackets.toString());
+        System.out.println(response);
+        assert response != null;
+        JSONObject responseJson = new JSONObject(response);
+        if (responseJson.getString("responsecode").equals("200")){
+            System.out.println("Envoi des données réussi");
+        } else {
+            System.out.println("Erreur lors de l'envoi des données");
+        }
+    }
+
+    private static JSONObject createIndexPacket(Integer jsonLength){
+        JSONObject indexpacket = new JSONObject();
+        indexpacket.put("name", "testname");
+        indexpacket.put("numberframe", jsonLength.toString());
+        indexpacket.put("datetime","2023-10-25 08:42:51");
+        return indexpacket;
     }
 }
