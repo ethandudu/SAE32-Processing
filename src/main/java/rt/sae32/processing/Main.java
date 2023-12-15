@@ -32,6 +32,7 @@ public class Main {
 
                 JSONObject objetATrouver = array.getJSONObject(i);
 
+                jsonObject.put("packetid", i);
                 // Search in the object for the value of the key [_source][layers][frame][frame.protocols]
                 JSONObject source = objetATrouver.getJSONObject("_source");
                 JSONObject layers = source.getJSONObject("layers");
