@@ -40,8 +40,8 @@ public class Main {
                 // Découpe protocols en fonction des ":" et met les valeurs dans un JSONArray
                 String[] protocolsArrayString = frame.getString("frame.protocols").split(":");
                 JSONArray protocols= new JSONArray();
-                for (int j = 0; j < protocolsArrayString.length; j++) {
-                    protocols.put(protocolsArrayString[j]);
+                for (String s : protocolsArrayString) {
+                    protocols.put(s);
                 }
                 System.out.println("protocols : " + protocols);
                 jsonObject.put("protocols", protocols);
