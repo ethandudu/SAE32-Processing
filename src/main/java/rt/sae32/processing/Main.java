@@ -38,7 +38,7 @@ public class Main {
                 JSONObject frame = layers.getJSONObject("frame");
 
                 // Découpe protocols en fonction des ":" et met les valeurs dans un JSONArray
-                String protocolsArrayString[] = frame.getString("frame.protocols").split(":");
+                String[] protocolsArrayString = frame.getString("frame.protocols").split(":");
                 JSONArray protocols= new JSONArray();
                 for (int j = 0; j < protocolsArrayString.length; j++) {
                     protocols.put(protocolsArrayString[j]);
