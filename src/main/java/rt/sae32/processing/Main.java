@@ -25,6 +25,10 @@ public class Main {
             for (int i = 0; i < array.length(); i++) {
                 String macSource = null;
                 String macDestination = null;
+                String arpMacSource = null;
+                String arpMacDestination = null;
+                String arpIPSource = null;
+                String arpIPDestination = null;
                 String ipSource = null;
                 String ipDestination = null;
                 String portSource = null;
@@ -86,17 +90,38 @@ public class Main {
 
                 //Cherche dans le tableau protocols s'il y a udp ou tcp
                 for (int j = 0; j < protocols.length(); j++) {
-                    if (protocols.getString(j).equals("udp")) {
+                    /*if (protocols.getString(j).equals("eth")) {}
+                    else if (protocols.getString(j).equals("sll")) {}
+                    */
+                    if (protocols.getString(j).equals("arp")) {
+                        JSONObject arp = new JSONObject();
+                        arpMacSource = layers.getJSONObject("arp").getString("arp.src.hw_mac");
+                        arpMacDestination = layers.getJSONObject("arp").getString("arp.dst.hw_mac");
+                        arpIPSource = layers.getJSONObject("arp").getString("arp.src.proto_ipv4");
+                        arpIPDestination = layers.getJSONObject("arp").getString("arp.dst.proto_ipv4");
+                        data.put("arp", arp.put("srcmac", arpMacSource).put("dstmac", arpMacDestination).put("srcip", arpIPSource).put("dstip", arpIPDestination));                        
+                    }
+                    /*if (protocols.getString(j).equals("ip")) {}
+                    else if (protocols.getString(j).equals("ipv6")) {}
+                    if (protocols.getString(j).equals("DHCP")) {}
+                    if (protocols.getString(j).equals("DNS")) {}
+                    if (protocols.getString(j).equals("http")) {}
+                    if (protocols.getString(j).equals("MPLS")) {}
+                    if (protocols.getString(j).equals("TLS")) {}
+                    */
+                    
+                    if (protocols.getString(j).equals("tcp")) {
+                        JSONObject tcp = new JSONObject();
+                        portSource = layers.getJSONObject("tcp").getString("tcp.srcport");
+                        portDestination = layers.getJSONObject("tcp").getString("tcp.dstport");
+                        data.put("tcp", tcp.put("srcport", portSource).put("dstport", portDestination));
+                    } else if (protocols.getString(j).equals("udp")) {
                         JSONObject udp = new JSONObject();
                         portSource = layers.getJSONObject("udp").getString("udp.srcport");
                         portDestination = layers.getJSONObject("udp").getString("udp.dstport");
-                        udp.put("srcport", portSource);
-                        udp.put("dstport", portDestination);
-                        data.put("udp", udp);
-                    } else if (protocols.getString(j).equals("tcp")) {
-                        JSONObject tcp = layers.getJSONObject("tcp");
-                        data.put("tcp", tcp);
+                        data.put("udp", udp.put("srcport", portSource).put("dstport", portDestination));
                     }
+                    
                 }
                 
                 /*
