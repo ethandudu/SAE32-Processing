@@ -14,11 +14,11 @@ public class Main {
         }
         try {
 
-            // Créer un JSONArray pour stocker les String
-            JSONObject object = new JSONObject();
-
-            // Créer un JSONObject pour stocker les valeurs
+            // Crée un JSONObject pour stocker les les objets
             JSONObject packet = new JSONObject();
+
+            // Crée un JSONObject pour stocker les valeurs
+            JSONObject object = new JSONObject();
 
             System.out.println("--------------------------------------------------");
 
@@ -27,6 +27,8 @@ public class Main {
                 String macDestination = null;
                 String ipSource = null;
                 String ipDestination = null;
+                String portSource = null;
+                String portDestination = null;
 
                 JSONObject jsonObject = new JSONObject();
 
@@ -81,12 +83,44 @@ public class Main {
                 jsonObject.put("ipdst", ipDestination);
 
                 JSONObject data = new JSONObject();
-                jsonObject.put("data", data);
+
+                //Cherche dans le tableau protocols s'il y a udp ou tcp
+                for (int j = 0; j < protocols.length(); j++) {
+                    if (protocols.getString(j).equals("udp")) {
+                        JSONObject udp = new JSONObject();
+                        portSource = layers.getJSONObject("udp").getString("udp.srcport");
+                        portDestination = layers.getJSONObject("udp").getString("udp.dstport");
+                        udp.put("srcport", portSource);
+                        udp.put("dstport", portDestination);
+                        data.put("udp", udp);
+                    } else if (protocols.getString(j).equals("tcp")) {
+                        JSONObject tcp = layers.getJSONObject("tcp");
+                        data.put("tcp", tcp);
+                    }
+                }
+                
+                /*
+                if (layers.has("udp")) {
+                    JSONObject udp = layers.getJSONObject("udp");
+                    data.put("udp", udp);
+                    
+                } else if (layers.has("tcp")) {
+                    JSONObject tcp = layers.getJSONObject("tcp");
+                    data.put("tcp", tcp);
+                }
+
+                if (layers.has("http")) {
+                    JSONObject http = layers.getJSONObject("http");
+                    data.put("http", http);
+                }
+                */
+                
+                jsonObject.put("datapackets", data);
                 System.out.println("Data : " + data);
 
                 System.out.println("--------------------------------------------------");
                 
-                // Ajouter le JSONObject au JSONArray
+                // Ajouter les objets à un autre JSONObject
                 object.put(Integer.toString(i),jsonObject);
             }
             // System.out.println(array.getJSONObject(0).getJSONObject("_source").getJSONObject("layers").getJSONObject("frame").getString("frame.protocols"));
@@ -94,7 +128,10 @@ public class Main {
             packet.put("packets", object);
 
             // Affiche le JSONObject contenant toutes les valeurs
-            SendData(createIndexPacket(object.length()), packet);
+            System.out.println(packet);
+
+            // Envoi des données
+            //SendData(createIndexPacket(object.length()), packet);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -110,7 +147,7 @@ public class Main {
         }
     }
 
-    private static void SendData(JSONObject dataindex, JSONObject datapackets){
+    /*private static void SendData(JSONObject dataindex, JSONObject datapackets){
         String url = "https://api.sae32.ethanduault.fr/insert.php";
         String response = HttpRequest.main(url, dataindex.toString(), datapackets.toString());
         System.out.println(response);
@@ -129,5 +166,5 @@ public class Main {
         indexpacket.put("numberframe", jsonLength.toString());
         indexpacket.put("datetime","2023-10-25 08:42:51");
         return indexpacket;
-    }
+    }*/
 }
