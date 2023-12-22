@@ -20,19 +20,10 @@ public class Main {
             // Crée un JSONObject pour stocker les valeurs
             JSONObject object = new JSONObject();
 
-            System.out.println("--------------------------------------------------");
-
             for (int i = 0; i < array.length(); i++) {
-                String macSource = null;
-                String macDestination = null;
-                String arpMacSource = null;
-                String arpMacDestination = null;
-                String arpIPSource = null;
-                String arpIPDestination = null;
-                String ipSource = null;
-                String ipDestination = null;
-                String portSource = null;
-                String portDestination = null;
+                String macSource = null, macDestination = null;
+                String ipSource = null, ipDestination = null;
+                String portSource = null, portDestination = null;
 
                 JSONObject jsonObject = new JSONObject();
 
@@ -50,61 +41,56 @@ public class Main {
                 for (String s : protocolsArrayString) {
                     protocols.put(s);
                 }
-                System.out.println("protocols : " + protocols);
                 jsonObject.put("protocols", protocols);
                 
-                if (layers.has("sll")) {
-                    JSONObject sll = layers.getJSONObject("sll");
-                    if (sll.has("sll.src.eth")) {
-                        macSource = sll.getString("sll.src.eth");
-                    }
-                    if (sll.has("sll.dst.eth")) {
-                        macDestination = sll.getString("sll.dst.eth");
-                    }
-                } else if (layers.has("eth")) {
-                    JSONObject eth = layers.getJSONObject("eth");
-                    macSource = eth.getString("eth.src");
-                    macDestination = eth.getString("eth.dst");                    
-                }
-                System.out.println("MAC Source : " + macSource);
-                System.out.println("MAC Destination : " + macDestination);
-                jsonObject.put("macsrc", macSource);
-                jsonObject.put("macdst", macDestination);
-
-                if (layers.has("ip")) {
-                    JSONObject ip = layers.getJSONObject("ip");
-                    ipSource = ip.getString("ip.src");
-                    ipDestination = ip.getString("ip.dst");
-                } else if (layers.has("ipv6")) {
-                    JSONObject ipv6 = layers.getJSONObject("ipv6");
-                    ipSource = ipv6.getString("ipv6.src");
-                    ipDestination = ipv6.getString("ipv6.dst");
-
-                }
-                System.out.println("IP Source : " + ipSource);
-                System.out.println("IP Destination : " + ipDestination);
-                jsonObject.put("ipsrc", ipSource);
-                jsonObject.put("ipdst", ipDestination);
-
                 JSONObject data = new JSONObject();
 
-                //Cherche dans le tableau protocols s'il y a udp ou tcp
+                //Cherche dans le tableau protocols s'il y a les protocoles suivants
                 for (int j = 0; j < protocols.length(); j++) {
-                    /*if (protocols.getString(j).equals("eth")) {}
-                    else if (protocols.getString(j).equals("sll")) {}
-                    */
+                    if (protocols.getString(j).equals("eth")) {
+                        macSource = layers.getJSONObject("eth").getString("eth.src");
+                        macDestination = layers.getJSONObject("eth").getString("eth.dst");
+                    } else if (protocols.getString(j).equals("sll")) {
+                        if (layers.getJSONObject("sll").has("sll.src.eth")) {
+                            macSource = layers.getJSONObject("sll").getString("sll.src.eth");
+                        }
+                        if (layers.getJSONObject("sll").has("sll.dst.eth")) {
+                            macDestination = layers.getJSONObject("sll").getString("sll.dst.eth");
+                        }
+                    }
+                    jsonObject.put("macsrc", macSource).put("macdst", macDestination);
+
+                    if (protocols.getString(j).equals("ip")) {
+                        ipSource = layers.getJSONObject("ip").getString("ip.src");
+                        ipDestination = layers.getJSONObject("ip").getString("ip.dst");
+                    } else if (protocols.getString(j).equals("ipv6")) {
+                        ipSource = layers.getJSONObject("ipv6").getString("ipv6.src");
+                        ipDestination = layers.getJSONObject("ipv6").getString("ipv6.dst");
+                    }
+                    jsonObject.put("srcip", ipSource).put("dstip", ipDestination);
+
                     if (protocols.getString(j).equals("arp")) {
                         JSONObject arp = new JSONObject();
+                        String arpMacSource = null, arpMacDestination = null, arpIPSource = null, arpIPDestination = null;
                         arpMacSource = layers.getJSONObject("arp").getString("arp.src.hw_mac");
                         arpMacDestination = layers.getJSONObject("arp").getString("arp.dst.hw_mac");
                         arpIPSource = layers.getJSONObject("arp").getString("arp.src.proto_ipv4");
                         arpIPDestination = layers.getJSONObject("arp").getString("arp.dst.proto_ipv4");
                         data.put("arp", arp.put("srcmac", arpMacSource).put("dstmac", arpMacDestination).put("srcip", arpIPSource).put("dstip", arpIPDestination));                        
                     }
-                    /*if (protocols.getString(j).equals("ip")) {}
-                    else if (protocols.getString(j).equals("ipv6")) {}
-                    if (protocols.getString(j).equals("DHCP")) {}
-                    if (protocols.getString(j).equals("DNS")) {}
+                    
+                    /*
+                    if (protocols.getString(j).equals("DHCP")) {
+                        JSONObject dhcp = new JSONObject();
+                        String dhcpMacSource = null, dhcpIPSource = null, dhcpIPDestination = null dhcpIPClient = null, dhcpIPServer = null;
+                        dhcpMacSource = layers.getJSONObject("dhcp").getString("dhcp.hw.mac");
+                        dhcpIPSource = layers.getJSONObject("dhcp").getString("dhcp.ip.src");
+                        dhcpIPDestination = layers.getJSONObject("dhcp").getString("dhcp.ip.dst");
+                        data.put("dhcp", dhcp.put("srcmac", dhcpMacSource).put("dstmac", dhcpMacDestination).put("srcip", dhcpIPSource).put("dstip", dhcpIPDestination));
+                    }
+                    if (protocols.getString(j).equals("DNS")) {
+
+                    }
                     if (protocols.getString(j).equals("http")) {}
                     if (protocols.getString(j).equals("MPLS")) {}
                     if (protocols.getString(j).equals("TLS")) {}
@@ -121,28 +107,20 @@ public class Main {
                         portDestination = layers.getJSONObject("udp").getString("udp.dstport");
                         data.put("udp", udp.put("srcport", portSource).put("dstport", portDestination));
                     }
-                    
                 }
-                
-                /*
-                if (layers.has("udp")) {
-                    JSONObject udp = layers.getJSONObject("udp");
-                    data.put("udp", udp);
-                    
-                } else if (layers.has("tcp")) {
-                    JSONObject tcp = layers.getJSONObject("tcp");
-                    data.put("tcp", tcp);
-                }
-
-                if (layers.has("http")) {
-                    JSONObject http = layers.getJSONObject("http");
-                    data.put("http", http);
-                }
-                */
                 
                 jsonObject.put("datapackets", data);
-                System.out.println("Data : " + data);
 
+                // Affiche les valeurs
+
+                System.out.println("--------------------------------------------------");
+                System.out.println("packetid : " + i);
+                System.out.println("protocols : " + protocols);                
+                System.out.println("MAC Source : " + macSource);
+                System.out.println("MAC Destination : " + macDestination);
+                System.out.println("IP Source : " + ipSource);
+                System.out.println("IP Destination : " + ipDestination);
+                System.out.println("Data : " + data);
                 System.out.println("--------------------------------------------------");
                 
                 // Ajouter les objets à un autre JSONObject
@@ -156,7 +134,7 @@ public class Main {
             System.out.println(packet);
 
             // Envoi des données
-            //SendData(createIndexPacket(object.length()), packet);
+            SendData(createIndexPacket(object.length()), packet);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -172,7 +150,7 @@ public class Main {
         }
     }
 
-    /*private static void SendData(JSONObject dataindex, JSONObject datapackets){
+    private static void SendData(JSONObject dataindex, JSONObject datapackets){
         String url = "https://api.sae32.ethanduault.fr/insert.php";
         String response = HttpRequest.main(url, dataindex.toString(), datapackets.toString());
         System.out.println(response);
@@ -191,5 +169,5 @@ public class Main {
         indexpacket.put("numberframe", jsonLength.toString());
         indexpacket.put("datetime","2023-10-25 08:42:51");
         return indexpacket;
-    }*/
+    }
 }
