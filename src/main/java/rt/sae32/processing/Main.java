@@ -191,9 +191,11 @@ public class Main {
             String value = args[i+1];
 
             switch (key){
-                case "-f" : fileName = value;
+                case "-f" : //noinspection UnusedAssignment
+                    fileName = value;
                 case "-file" : fileName = value;
-                case "-n" : testName = value;
+                case "-n" : //noinspection UnusedAssignment
+                    testName = value;
                 case "-name" : testName = value;
             }
         }
