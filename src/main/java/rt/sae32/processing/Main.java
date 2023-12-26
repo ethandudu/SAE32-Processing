@@ -72,7 +72,7 @@ public class Main {
                         ipSource = layers.getJSONObject("ipv6").getString("ipv6.src");
                         ipDestination = layers.getJSONObject("ipv6").getString("ipv6.dst");
                     }
-                    jsonObject.put("srcip", ipSource).put("dstip", ipDestination);
+                    jsonObject.put("ipsrc", ipSource).put("ipdst", ipDestination);
 
                     if (protocols.getString(j).equals("arp")) {
                         JSONObject arp = new JSONObject();
@@ -83,16 +83,22 @@ public class Main {
                         arpIPDestination = layers.getJSONObject("arp").getString("arp.dst.proto_ipv4");
                         data.put("arp", arp.put("srcmac", arpMacSource).put("dstmac", arpMacDestination).put("srcip", arpIPSource).put("dstip", arpIPDestination));                        
                     }
-                    
-                    /*
-                    if (protocols.getString(j).equals("DHCP")) {
+
+
+                    if (protocols.getString(j).equals("dhcp")) {
                         JSONObject dhcp = new JSONObject();
-                        String dhcpMacSource = null, dhcpIPSource = null, dhcpIPDestination = null dhcpIPClient = null, dhcpIPServer = null;
-                        dhcpMacSource = layers.getJSONObject("dhcp").getString("dhcp.hw.mac");
-                        dhcpIPSource = layers.getJSONObject("dhcp").getString("dhcp.ip.src");
-                        dhcpIPDestination = layers.getJSONObject("dhcp").getString("dhcp.ip.dst");
-                        data.put("dhcp", dhcp.put("srcmac", dhcpMacSource).put("dstmac", dhcpMacDestination).put("srcip", dhcpIPSource).put("dstip", dhcpIPDestination));
+                        JSONArray dhcpOptions;
+                        dhcpOptions = layers.getJSONObject("dhcp").getJSONArray("dhcp.option.type");
+                        for (int k = 0; k < dhcpOptions.length(); k++) {
+                            if (dhcpOptions.getString(k).equals("53")) {
+                                JSONArray dhcpOptionTree;
+                                dhcpOptionTree = layers.getJSONObject("dhcp").getJSONArray("dhcp.option.type_tree");
+                                String dhcpOptionType = dhcpOptionTree.getJSONObject(k).getString("dhcp.option.dhcp");
+                                data.put("dhcp", dhcp.put("type", dhcpOptionType));
+                            }
+                        }
                     }
+                    /*
                     if (protocols.getString(j).equals("DNS")) {
 
                     }
@@ -186,7 +192,9 @@ public class Main {
 
             switch (key){
                 case "-f" : fileName = value;
+                case "-file" : fileName = value;
                 case "-n" : testName = value;
+                case "-name" : testName = value;
             }
         }
         if (fileName == null || testName == null){
