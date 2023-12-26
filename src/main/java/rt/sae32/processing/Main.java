@@ -4,8 +4,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class Main {
     public static void main(String[] args) {
@@ -141,7 +139,7 @@ public class Main {
             System.out.println(packet);
 
             // Envoi des données
-            SendData(createIndexPacket(object.length(), testName), packet);
+            SendData(Index.createIndexPacket(object.length(), testName), packet);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -169,22 +167,6 @@ public class Main {
         } else {
             System.out.println("Erreur lors de l'envoi des données");
         }
-    }
-
-    private static JSONObject createIndexPacket(Integer jsonLength, String testName){
-        JSONObject indexpacket = new JSONObject();
-        indexpacket.put("name", testName);
-        indexpacket.put("numberframe", jsonLength.toString());
-        indexpacket.put("datetime",createDateTime());
-        return indexpacket;
-    }
-
-    private static String createDateTime(){
-        //get current date time
-        Date date = new Date();
-        //process date to YYYY-MM-DD HH:MM:SS
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return formatter.format(date);
     }
 
     private static void printHelp(){
