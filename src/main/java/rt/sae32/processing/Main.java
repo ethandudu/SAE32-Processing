@@ -9,11 +9,16 @@ import java.util.Date;
 
 public class Main {
     public static void main(String[] args) {
-        JSONArray array = loadFile("/nas2/users/etudiant/b/by310239/Documents/GitHub/Wireshark/ether.json");
+        String[] parsedArgs = parseArgs(args);
+        String fileName = parsedArgs[0];
+        String testName = parsedArgs[1];
+        JSONArray array = loadFile(fileName);
+
         if (array == null) {
             System.out.println("Erreur lors de la lecture du fichier");
             return;
         }
+
         try {
 
             // Crée un JSONObject pour stocker les les objets
@@ -136,7 +141,7 @@ public class Main {
             System.out.println(packet);
 
             // Envoi des données
-            SendData(createIndexPacket(object.length()), packet);
+            SendData(createIndexPacket(object.length(), testName), packet);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -166,9 +171,9 @@ public class Main {
         }
     }
 
-    private static JSONObject createIndexPacket(Integer jsonLength){
+    private static JSONObject createIndexPacket(Integer jsonLength, String testName){
         JSONObject indexpacket = new JSONObject();
-        indexpacket.put("name", "testname");
+        indexpacket.put("name", testName);
         indexpacket.put("numberframe", jsonLength.toString());
         indexpacket.put("datetime",createDateTime());
         return indexpacket;
@@ -180,5 +185,32 @@ public class Main {
         //process date to YYYY-MM-DD HH:MM:SS
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return formatter.format(date);
+    }
+
+    private static void printHelp(){
+        System.out.println("Usage :");
+        System.out.println("java -jar processing.jar -f <file> -n <testname>");
+    }
+
+    private static String[] parseArgs(String[] args){
+        if (args.length < 4){
+            printHelp();
+            System.exit(0);
+        }
+        String fileName = null, testName = null;
+        for (int i=0; i<args.length; i+=2){
+            String key = args[i];
+            String value = args[i+1];
+
+            switch (key){
+                case "-f" : fileName = value;
+                case "-n" : testName = value;
+            }
+        }
+        if (fileName == null || testName == null){
+            printHelp();
+            System.exit(0);
+        }
+        return new String[]{fileName, testName};
     }
 }
