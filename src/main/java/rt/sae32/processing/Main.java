@@ -145,50 +145,87 @@ public class Main {
             System.out.println(packet);
 
             // Envoi des données
-            SendData(Index.createIndexPacket(object.length(), testName), packet);
+
+            // switch on HTTP response code
+            switch (SendData(Index.createIndexPacket(object.length(), testName), packet))
+            {
+                case 200:
+                    System.out.println("Data inserted");
+
+                case 410:
+                    System.out.println("No data provided");
+
+                case 411:
+                    System.out.println("No index provided");
+
+                case 412:
+                    System.out.println("No packets data provided");
+
+                case 400:
+                    System.out.println("Not Authorized");
+
+                case 504:
+                    System.out.println("Server did not respond");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Loads a file
+     * @param InputFile path to the file
+     * @return A JsonArray representation of the file, null if the file does not exist
+     */
     private static JSONArray loadFile(String InputFile) {
-        //check if the file exists
-        if (Files.exists(Paths.get(InputFile))) {
-            return RemoveDuplicateKeys.main(InputFile);
-        } else {
-            System.out.println("Le fichier n'existe pas");
+        if (!Files.exists(Paths.get(InputFile)))
             return null;
-        }
+
+        return RemoveDuplicateKeys.main(InputFile);
     }
 
-    private static void SendData(JSONObject dataindex, JSONObject datapackets){
-        String url = "https://api.sae32.ethanduault.fr/insert.php";
-        String response = HttpRequest.main(url
-, dataindex.toString(), datapackets.toString());
+    /**
+     * Make a webrequest to the API to insert the test
+     * @param dataindex Data of the index packet
+     * @param datapackets Data of the packets
+     * @return The response code of the server
+     */
+    private static int SendData(JSONObject dataindex, JSONObject datapackets){
+        final String url = "https://api.sae32.ethanduault.fr/insert.php";
+
+        String response = HttpRequest.send(url, dataindex.toString(), datapackets.toString());
+
+        if (response == null)
+            return 504; // server did not respond
+
         System.out.println(response);
-        assert response != null;
         JSONObject responseJson = new JSONObject(response);
-        if (responseJson.getString("responsecode").equals("200")){
-            System.out.println("Envoi des données réussi");
-        } else {
-            System.out.println("Erreur lors de l'envoi des données");
-        }
+
+        return Integer.parseInt(responseJson.getString("responsecode"));
     }
 
+    /**
+     * Display the help
+     */
     private static void printHelp(){
         System.out.println("Usage :");
         System.out.println("java -jar processing.jar -f <file> -n <testname>");
     }
 
+    /**
+     * Parses command line arguments.
+     * @param args The command line arguments.
+     * @return An array containing the file name and test name.
+     */
     private static String[] parseArgs(String[] args){
         if (args.length < 4){
             printHelp();
-            System.exit(0);
+            System.exit(1);
         }
         String fileName = null, testName = null;
         for (int i=0; i<args.length; i+=2){
-            String key = args[i];
-            String value = args[i+1];
+            final String key = args[i];
+            final String value = args[i+1];
 
             switch (key){
                 case "-f" : //noinspection UnusedAssignment
@@ -201,7 +238,7 @@ public class Main {
         }
         if (fileName == null || testName == null){
             printHelp();
-            System.exit(0);
+            System.exit(1);
         }
         return new String[]{fileName, testName};
     }
