@@ -6,7 +6,14 @@ import java.net.URL;
 import java.io.*;
 
 public class HttpRequest {
-    public static String main(String urlstring, String dataIndex, String dataPackets) {
+    /**
+     * Fetches data from the server
+     * @param urlstring URL to send the request to
+     * @param dataIndex Index data
+     * @param dataPackets Data packets
+     * @return Response from the server
+     */
+    public static String send(String urlstring, String dataIndex, String dataPackets) {
         try {
             URL url = new URL(urlstring);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();

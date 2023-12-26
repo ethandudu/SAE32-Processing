@@ -6,6 +6,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Index {
+    /**
+     * Creates a JSON object for the index
+     * @param jsonLength Length of the JSON data
+     * @param testName Name of the test
+     * @return JSON object
+     */
     public static JSONObject createIndexPacket(Integer jsonLength, String testName){
         JSONObject indexpacket = new JSONObject();
         indexpacket.put("name", testName);
@@ -14,6 +20,10 @@ public class Index {
         return indexpacket;
     }
 
+    /**
+     * Creates the date and time for the index with current date and time
+     * @return Date and time in YYYY-MM-DD HH:MM:SS format
+     */
     private static String createDateTime(){
         //get current date time
         Date date = new Date();
