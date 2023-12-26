@@ -4,6 +4,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Main {
     public static void main(String[] args) {
@@ -152,7 +154,8 @@ public class Main {
 
     private static void SendData(JSONObject dataindex, JSONObject datapackets){
         String url = "https://api.sae32.ethanduault.fr/insert.php";
-        String response = HttpRequest.main(url, dataindex.toString(), datapackets.toString());
+        String response = HttpRequest.main(url
+, dataindex.toString(), datapackets.toString());
         System.out.println(response);
         assert response != null;
         JSONObject responseJson = new JSONObject(response);
@@ -167,7 +170,15 @@ public class Main {
         JSONObject indexpacket = new JSONObject();
         indexpacket.put("name", "testname");
         indexpacket.put("numberframe", jsonLength.toString());
-        indexpacket.put("datetime","2023-10-25 08:42:51");
+        indexpacket.put("datetime",createDateTime());
         return indexpacket;
+    }
+
+    private static String createDateTime(){
+        //get current date time
+        Date date = new Date();
+        //process date to YYYY-MM-DD HH:MM:SS
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return formatter.format(date);
     }
 }
