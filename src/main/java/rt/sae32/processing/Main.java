@@ -109,7 +109,6 @@ public class Main {
                             case "1" -> "Response";
                             default -> "Unknown";
                         };
-                        System.out.println(type);
                         JSONObject queries = layers.getJSONObject("dns").getJSONObject("Queries");
                         JSONObject queriesTree = new JSONObject();
 
@@ -183,11 +182,7 @@ public class Main {
                         }
 
                     }
-                    /*
-                    if (protocols.getString(j).equals("http")) {}
-                    if (protocols.getString(j).equals("MPLS")) {}
-                    if (protocols.getString(j).equals("TLS")) {}
-                    */
+
                     
                     if (protocols.getString(j).equals("tcp")) {
                         JSONObject tcp = new JSONObject();
@@ -204,17 +199,6 @@ public class Main {
                 
                 jsonObject.put("datapackets", data);
 
-                // Affiche les valeurs
-
-                System.out.println("--------------------------------------------------");
-                System.out.println("packetid : " + i);
-                System.out.println("protocols : " + protocols);                
-                System.out.println("MAC Source : " + macSource);
-                System.out.println("MAC Destination : " + macDestination);
-                System.out.println("IP Source : " + ipSource);
-                System.out.println("IP Destination : " + ipDestination);
-                System.out.println("Data : " + data);
-                System.out.println("--------------------------------------------------");
                 
                 // Ajouter les objets à un autre JSONObject
                 object.put(Integer.toString(i),jsonObject);
@@ -223,8 +207,6 @@ public class Main {
             
             packet.put("packets", object);
 
-            // Affiche le JSONObject contenant toutes les valeurs
-            System.out.println(packet);
 
             // Envoi des données
 
