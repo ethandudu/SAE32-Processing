@@ -26,6 +26,7 @@ public class Config {
     }
 
     /**
+     * Set the server url
      * @param serverUrl The server url to set
      */
     public void setServerUrl(String serverUrl) {
@@ -33,16 +34,25 @@ public class Config {
     }
 
     /**
+     * Set the token
      * @param token The token of the API to set
      */
     public void setToken(String token) {
         this.token = token;
     }
 
+    /**
+     * Get the server url
+     * @return The server url
+     */
     public String getServerUrl() {
         return serverUrl;
     }
 
+    /**
+     * Get the token
+     * @return The token
+     */
     public String getToken() {
         return token;
     }
