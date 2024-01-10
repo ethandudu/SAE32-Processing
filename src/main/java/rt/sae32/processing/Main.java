@@ -296,12 +296,12 @@ public class Main {
                 int choice = s.nextInt();
                 switch (choice) {
                     case 1 -> {
-                        System.out.println("Please enter the new server url :");
+                        System.out.println("Please enter the new server url (ex: https://sub.domain.tld) :");
                         String url = s.next();
                         config.setServerUrl(url);
                     }
                     case 2 -> {
-                        System.out.println("Please enter the new api key :");
+                        System.out.println("Please enter the new api key (ex: abcd1234) :");
                         String key = s.next();
                         config.setToken(key);
                     }
