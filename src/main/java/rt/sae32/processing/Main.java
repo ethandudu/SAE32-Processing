@@ -4,10 +4,19 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         String[] parsedArgs = parseArgs(args);
+        Config config = new Config();
+
+        if (config.getServerUrl() == null || config.getToken() == null){
+            System.out.println("Please configure the program before using it");
+            System.out.println("Use the -c or --config option to configure the program");
+            System.exit(1);
+        }
+
         String fileName = parsedArgs[0];
         String testName = parsedArgs[1];
         JSONArray array = loadFile(fileName);
@@ -180,9 +189,7 @@ public class Main {
                         } else {
                             data.put("dns", dns.put("type", type).put("queries", queriesTree));
                         }
-
                     }
-
                     
                     if (protocols.getString(j).equals("tcp")) {
                         JSONObject tcp = new JSONObject();
@@ -249,9 +256,11 @@ public class Main {
      * @return The response code of the server
      */
     private static int SendData(JSONObject dataindex, JSONObject datapackets){
-        final String url = "https://api.sae32.ethanduault.fr/insert.php";
+        Config config = new Config();
+        final String url = config.getServerUrl()+"/insert.php";
+        final String token = config.getToken();
 
-        String response = HttpRequest.send(url, dataindex.toString(), datapackets.toString());
+        String response = HttpRequest.send(url, token, dataindex.toString(), datapackets.toString());
 
         if (response == null)
             return 504; // server did not respond
@@ -265,8 +274,64 @@ public class Main {
      * Display the help
      */
     private static void printHelp(){
+        System.out.println("Config :");
+        System.out.println("java -jar processing.jar -c");
         System.out.println("Usage :");
         System.out.println("java -jar processing.jar -f <file> -n <testname>");
+    }
+
+    /**
+     * Let the user configure the program settings like the server url and the api key
+     */
+    private static void config(){
+        Scanner s = null;
+        Config config = new Config();
+        try {
+            s = new Scanner(System.in);
+            System.out.println("Welcome in the configuration menu");
+            System.out.println("Please select an option :");
+            System.out.println("1 - Change the server url\n2 - Change the api key\n3 - Display the saved configuration\n4 - Save\n5 - Exit");
+
+            while (s.hasNextLine()){
+                int choice = s.nextInt();
+                switch (choice) {
+                    case 1 -> {
+                        System.out.println("Please enter the new server url (ex: https://sub.domain.tld) :");
+                        String url = s.next();
+                        config.setServerUrl(url);
+                    }
+                    case 2 -> {
+                        System.out.println("Please enter the new api key (ex: abcd1234) :");
+                        String key = s.next();
+                        config.setToken(key);
+                    }
+                    case 3 -> {
+                        JSONObject currentConfig = config.getSavedConfig();
+                        if (currentConfig == null){
+                            System.out.println("No config found");
+                        } else {
+                            System.out.println("Server url : " + currentConfig.getString("serverUrl"));
+                            System.out.println("Api key : " + currentConfig.getString("token"));
+                        }
+                    }
+                    case 4 -> {
+                        config.saveConfig();
+                    }
+                    case 5 -> {
+                        System.out.println("Exiting...");
+                        return;
+                    }
+                    default -> System.out.println("Invalid choice");
+                }
+                System.out.println("\n\nWelcome in the configuration menu");
+                System.out.println("Please select an option :");
+                System.out.println("1 - Change the server url\n2 - Change the api key\n3 - Display the saved configuration\n4 - Save\n5 - Exit");
+            }
+        }
+        finally {
+            assert s != null;
+            s.close();
+        }
     }
 
     /**
@@ -275,6 +340,14 @@ public class Main {
      * @return An array containing the file name and test name.
      */
     private static String[] parseArgs(String[] args){
+        //check if the user used "-c" or "--config"
+        if (args.length == 1 && (args[0].equals("-h") || args[0].equals("--help"))){
+            printHelp();
+            System.exit(0);
+        } else if (args.length == 1 && (args[0].equals("-c") || args[0].equals("--config"))){
+            config();
+            System.exit(0);
+        }
         if (args.length < 4){
             printHelp();
             System.exit(1);
@@ -287,10 +360,10 @@ public class Main {
             switch (key){
                 case "-f" : //noinspection UnusedAssignment
                     fileName = value;
-                case "-file" : fileName = value;
+                case "--file" : fileName = value;
                 case "-n" : //noinspection UnusedAssignment
                     testName = value;
-                case "-name" : testName = value;
+                case "--name" : testName = value;
             }
         }
         if (fileName == null || testName == null){
