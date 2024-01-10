@@ -13,7 +13,7 @@ public class HttpRequest {
      * @param dataPackets Data packets
      * @return Response from the server
      */
-    public static String send(String urlstring, String dataIndex, String dataPackets) {
+    public static String send(String urlstring, String token, String dataIndex, String dataPackets) {
         try {
             URL url = new URL(urlstring);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -23,7 +23,7 @@ public class HttpRequest {
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW");
             conn.setRequestProperty("User-Agent", "Java/SAE32-Processing");
-            conn.setRequestProperty("Authorization", "wJb~9E@ttr#{%?K7");
+            conn.setRequestProperty("Authorization", token);
 
             // Form data
             String formData = "------WebKitFormBoundary7MA4YWxkTrZu0gW\r\n" +
