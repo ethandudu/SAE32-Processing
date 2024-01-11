@@ -113,7 +113,9 @@ public class Main {
                         if (layers.getJSONObject("http").has("http.host")) {
                             String httpHost = null, httpUserAgent = null, httpReferer = null;
                             httpHost = layers.getJSONObject("http").getString("http.host");
-                            httpUserAgent = layers.getJSONObject("http").getString("http.user_agent");
+                            if (layers.getJSONObject("http").has("http.user_agent")) {
+                                httpUserAgent = layers.getJSONObject("http").getString("http.user_agent");
+                            }
                             if (layers.getJSONObject("http").has("http.referer")) {
                                 httpReferer = layers.getJSONObject("http").getString("http.referer");
                             }

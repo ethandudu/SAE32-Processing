@@ -6,7 +6,7 @@
 
     <groupId>rt.sae32.processing</groupId>
     <artifactId>sae32-processing</artifactId>
-    <version>1.0-rc2</version>
+    <version>1.0</version>
 
     <dependencies>
         <dependency>
