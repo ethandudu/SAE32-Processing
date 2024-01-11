@@ -22,7 +22,7 @@ public class Main {
         JSONArray array = loadFile(fileName);
 
         if (array == null) {
-            System.out.println("Erreur lors de la lecture du fichier");
+            System.out.println("Error while loading the file");
             return;
         }
 
@@ -105,6 +105,32 @@ public class Main {
                                 String dhcpOptionType = dhcpOptionTree.getJSONObject(k).getString("dhcp.option.dhcp");
                                 data.put("dhcp", dhcp.put("type", dhcpOptionType));
                             }
+                        }
+                    }
+
+                    if (protocols.getString(j).equals("http")) {
+                        JSONObject http = new JSONObject();
+                        if (layers.getJSONObject("http").has("http.host")) {
+                            String httpHost = null, httpUserAgent = null, httpReferer = null;
+                            httpHost = layers.getJSONObject("http").getString("http.host");
+                            httpUserAgent = layers.getJSONObject("http").getString("http.user_agent");
+                            if (layers.getJSONObject("http").has("http.referer")) {
+                                httpReferer = layers.getJSONObject("http").getString("http.referer");
+                            }
+                            data.put("httpRequest", http.put("host", httpHost).put("UA", httpUserAgent).put("url", httpReferer));
+                        } else if (layers.getJSONObject("http").has("http.date")) {
+                            String httpDate = null, httpServer = null, httpLocation = null, httpContentType = null, httpResponse = null, httpResponseNumber = null, httpTime = null, httpResponseForUri = null;
+                            httpDate = layers.getJSONObject("http").getString("http.date");
+                            httpServer = layers.getJSONObject("http").getString("http.server");
+                            if (layers.getJSONObject("http").has("http.location")) {
+                                httpLocation = layers.getJSONObject("http").getString("http.location");
+                            }
+                            httpContentType = layers.getJSONObject("http").getString("http.content_type");
+                            httpResponse = layers.getJSONObject("http").getString("http.response");
+                            httpResponseNumber = layers.getJSONObject("http").getString("http.response_number");
+                            httpTime = layers.getJSONObject("http").getString("http.time");
+                            httpResponseForUri = layers.getJSONObject("http").getString("http.response_for.uri");
+                            data.put("httpResponse", http.put("date", httpDate).put("server", httpServer).put("location", httpLocation).put("content_type", httpContentType).put("response", httpResponse).put("response_number", httpResponseNumber).put("time", httpTime).put("response_for_uri", httpResponseForUri));
                         }
                     }
 
